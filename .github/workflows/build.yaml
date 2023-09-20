@@ -101,6 +101,9 @@ jobs:
       run: |
         type "./build/yama-ninja.log"
       shell: powershell
+
+    - name: list directories
+      run: ls - R
     
     - name: Check if Yama Scanner exists
       run: |
