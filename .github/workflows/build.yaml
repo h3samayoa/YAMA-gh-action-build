@@ -13,87 +13,84 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {
-            name: "Build YAMA Scanner",
-            pe: "YAMA.exe",
-          }
+          - { name: "Build YAMA Scanner", pe: "YAMA.exe" }
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
-        submodules: 'recursive'
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: "recursive"
 
-    - name: Install ninja build
-      uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Install ninja build
+        uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Install ccache
-      run: |
-        choco install -y ccache
-        (Get-Command ccache).Source
-        ccache -V
-    
-    - name: Cache LLVM and Clang
-      id: cache-llvm
-      uses: actions/cache@v3
-      with:
-        path: |
-          C:/Program Files/LLVM
-        key: llvm-15.0.7
-    
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: "15.0.7"
-        cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+      - name: Install ccache
+        run: |
+          choco install -y ccache
+          (Get-Command ccache).Source
+          ccache -V
 
-    # - name: Cache Eventlog manifest
-    #   id: cache-evtx-manifest
-    #   uses: actions/cache@v2
-    #   with:
-    #     path: |
-    #       rsrc/eventlog/Yama.Events.dll
-    #     key: ${{ runner.os }}-evtx-manifest-${{ hashFiles('rsrc/eventlog/Yama.Events.man') }}-${{ hashFiles('rsrc/eventlog/Yama.Events.h') }}
-    
-    # - name: Build EVTX manifest dll
-    #   run: |
-    #     if ("${{ steps.cache-evtx-manifest.outputs.cache-hit }}" -eq 'true') {
-    #       Write-Host "Using cached rsrc/eventlog/Yama.Events.dll"
-    #     } else {
-    #       Write-Host "No cached rsrc/eventlog/Yama.Events.dll Start building..."
-    #       cd rsrc/eventlog
-    #       ./build.bat
-    #     }
-    #   shell: powershell
+      - name: Cache LLVM and Clang
+        id: cache-llvm
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/Program Files/LLVM
+          key: llvm-15.0.7
 
-    - name: Cache .ccache
-      uses: actions/cache@v3
-      id: cache-ccache
-      with:
-        path: |
-          .ccache
-        key: ccache-${{ hashFiles('**/*.cpp', '**/*.hpp') }}
-        restore-keys: ccache-
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "15.0.7"
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
-    - name: Build YAMA Scanner
-      run: |
-        ./build.bat
-      shell: powershell
+      # - name: Cache Eventlog manifest
+      #   id: cache-evtx-manifest
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       rsrc/eventlog/Yama.Events.dll
+      #     key: ${{ runner.os }}-evtx-manifest-${{ hashFiles('rsrc/eventlog/Yama.Events.man') }}-${{ hashFiles('rsrc/eventlog/Yama.Events.h') }}
 
-    - name: Show ninja build log
-      run: |
-        type "./build/yama-ninja.log"
-      shell: powershell
+      # - name: Build EVTX manifest dll
+      #   run: |
+      #     if ("${{ steps.cache-evtx-manifest.outputs.cache-hit }}" -eq 'true') {
+      #       Write-Host "Using cached rsrc/eventlog/Yama.Events.dll"
+      #     } else {
+      #       Write-Host "No cached rsrc/eventlog/Yama.Events.dll Start building..."
+      #       cd rsrc/eventlog
+      #       ./build.bat
+      #     }
+      #   shell: powershell
 
-    - name: list directories
-      run: ls - R
-    
-    - name: Check if Yama Scanner exists
-      run: |
-        .\build\Yama.exe -V
+      - name: Cache .ccache
+        uses: actions/cache@v3
+        id: cache-ccache
+        with:
+          path: |
+            .ccache
+          key: ccache-${{ hashFiles('**/*.cpp', '**/*.hpp') }}
+          restore-keys: ccache-
 
-    - name: Archive build results
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ matrix.config.pe }}
-        path: .\build\Yama.exe
+      - name: Build YAMA Scanner
+        run: |
+          ./build.bat
+        shell: powershell
+
+      - name: Show ninja build log
+        run: |
+          type "./build/yama-ninja.log"
+        shell: powershell
+
+      - name: list directories
+        run: dir -r  | % { if ($_.PsIsContainer) { $_.FullName + "\" } else { $_.FullName } }
+
+      - name: Check if Yama Scanner exists
+        run: |
+          .\build\Yama.exe -V
+
+      - name: Archive build results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.config.pe }}
+          path: .\build\Yama.exe
