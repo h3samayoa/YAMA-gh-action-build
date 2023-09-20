@@ -36,12 +36,12 @@ jobs:
         with:
           path: |
             C:/Program Files/LLVM
-          key: llvm-15.0.7
+          key: llvm-17.0.1
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
         with:
-          version: "15.0.7"
+          version: "17.0.1"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       # - name: Cache Eventlog manifest
