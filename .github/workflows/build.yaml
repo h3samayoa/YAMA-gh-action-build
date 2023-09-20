@@ -1,26 +1,9 @@
 name: "yama-build"
 
 on:
-  push:
-    branches:
-      - "main"
-    paths:
-      - "dependencies/**"
-      - "src/**"
-      - "rsrc/**"
-      - "utils/**"
-      - "**/CmakeLists.txt"
-      - "**/*.bat"
-  pull_request:
-    branches:
-      - "main"
-    paths:
-      - "dependencies/**"
-      - "src/**"
-      - "rsrc/**"
-      - "utils/**"
-      - "**/CmakeLists.txt"
-      - "**/*.bat"
+  workflow_dispatch:
+  release:
+    types: [created]
 
 jobs:
   build:
