@@ -21,6 +21,9 @@ jobs:
           fetch-depth: 1
           submodules: "recursive"
 
+      - name: Get CMake
+        uses: symbitic/install-cmake@master
+
       - name: Install ninja build
         uses: seanmiddleditch/gha-setup-ninja@master
 
