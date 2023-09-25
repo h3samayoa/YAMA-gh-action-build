@@ -21,8 +21,11 @@ jobs:
           fetch-depth: 1
           submodules: "recursive"
 
-      - name: Get CMake
-        uses: symbitic/install-cmake@master
+      - name: Get latest CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: latest      # <--= optional, use the latest release candidate (notice the 'rc' suffix).
+          ninjaVersion: latest
 
       - name: Install ninja build
         uses: seanmiddleditch/gha-setup-ninja@master
